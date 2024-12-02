@@ -100,20 +100,23 @@ class Validator:
             first_visited_col = self.spop.visit_sequence.index[self.spop.visit_sequence == 0].values[0]
 
             if self.spop.method is None:
+                print('True1')
                 # if method is not specified
                 # for each column set method to default method according to its dtype (method for first visited column is sample_method)
                 self.spop.method = [DEFAULT_METHODS_MAP[self.spop.default_method][self.spop.df_dtypes[col]] if col != first_visited_col else SAMPLE_METHOD
                                     for col in self.spop.df_columns]
 
             elif isinstance(self.spop.method, str):
+                print('True2')
                 # if method type is str
                 # for each column set method to the corresponding allowed method according to its dtype (method for first visited column is sample_method)
                 self.spop.method = [INIT_METHODS_MAP[self.spop.method][self.spop.df_dtypes[col]] if col != first_visited_col else SAMPLE_METHOD
                                     for col in self.spop.df_columns]
 
             else:
+                print('True3')
                 # validate method for first visited column with non empty method is sample_method
-                for col, visit_order in self.spop.visit_sequence.sort_values().iteritems():
+                for col, visit_order in self.spop.visit_sequence.sort_values().items():
                     col_method = self.spop.method[self.spop.df_columns.index(col)]
                     if col_method != EMPTY_METHOD:
                         assert col_method == SAMPLE_METHOD
@@ -161,12 +164,14 @@ class Validator:
                 self.spop.visit_sequence = [col.item() for col in np.arange(self.spop.n_df_columns)]
 
             if isinstance(self.spop.visit_sequence[0], int):
+                print('True1')
                 # if visit_sequence is list of column indices
                 # validate every index in visit_sequence is a valid column index
                 assert set(self.spop.visit_sequence).issubset(set(np.arange(self.spop.n_df_columns)))
                 # transform visit_sequence into a list of column names
                 self.spop.visit_sequence = [self.spop.df_columns[i] for i in self.spop.visit_sequence]
             else:
+                print('True2')
                 # validate every column name in visit_sequence is a valid column name
                 assert set(self.spop.visit_sequence).issubset(set(self.spop.df_columns))
 
@@ -194,7 +199,7 @@ class Validator:
             self.spop.predictor_matrix = np.zeros([len(self.spop.visit_sequence), len(self.spop.visit_sequence)], dtype=int)
             self.spop.predictor_matrix = pd.DataFrame(self.spop.predictor_matrix, index=self.spop.visit_sequence.index, columns=self.spop.visit_sequence.index)
             visited_columns = []
-            for col, _ in self.spop.visit_sequence.sort_values().iteritems():
+            for col, _ in self.spop.visit_sequence.sort_values().items():
                 self.spop.predictor_matrix.loc[col, visited_columns] = 1
                 visited_columns.append(col)
 

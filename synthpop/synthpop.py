@@ -70,7 +70,7 @@ class Synthpop:
 
         # train
         self.predictor_matrix_columns = self.predictor_matrix.columns.to_numpy()
-        for col, visit_step in self.visit_sequence.sort_values().iteritems():
+        for col, visit_step in self.visit_sequence.sort_values().items():
             print('train_{}'.format(col))
 
             # initialise the method
@@ -96,7 +96,7 @@ class Synthpop:
     def _generate(self):
         synth_df = pd.DataFrame(data=np.zeros([self.k, len(self.visit_sequence)]), columns=self.visit_sequence.index)
 
-        for col, visit_step in self.visit_sequence.sort_values().iteritems():
+        for col, visit_step in self.visit_sequence.sort_values().items():
             print('generate_{}'.format(col))
 
             # reload the method

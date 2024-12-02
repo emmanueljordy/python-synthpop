@@ -7,7 +7,7 @@ from synthpop.method import Method, proper, smooth
 from synthpop import NUM_COLS_DTYPES, CAT_COLS_DTYPES
 
 
-class CARTMethod(Method):
+class CARTMethod(Method): 
     def __init__(self, dtype, smoothing=False, proper=False, minibucket=5, random_state=None, *args, **kwargs):
         self.dtype = dtype
         self.smoothing = smoothing
