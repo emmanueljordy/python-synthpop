@@ -2,11 +2,28 @@ from synthpop import Synthpop
 import pandas as pd
 import pyreadr
 
+def synBar():
+    df = pd.read_csv("bar_pass_prediction.csv")[[ 'race1', 'ugpa', 'bar']]
+    print(df.dtypes)
+    dtype_map = { 'race1': 'category', 'ugpa': 'float', 'bar': 'category'}
+
+    for (k,v) in dtype_map.items():
+
+        if v == 'category':
+            df = df.astype({k : "category"})
+
+    print(df.dtypes)
+    spop = Synthpop()
+    spop.fit(df,dtype_map)
+
+    synth_df = spop.generate(len(df))
+
+    print(synth_df.head())
 
 def synSD2011():
     df0 = pyreadr.read_r("SD2011.rda")['SD2011']
     #pd.read_csv("bar_pass_prediction.csv")
-    print(df0)
+    print(df0.dtypes)
     df = df0[['age', 'unempdur', 'income', 'sex']]#df0[['sex', 'race1', 'ugpa', 'bar']]
     #df.to_excel("inputData.xlsx")
     dtype_map ={
@@ -28,3 +45,6 @@ def synSD2011():
     synth_df = spop.generate(len(df))
 
     print(synth_df.head())
+
+
+synBar()

@@ -57,7 +57,7 @@ class Processor:
                                                               'nan_value': col_nan_category
                                                               }
 
-                        df[col].cat.add_categories(col_nan_category, inplace=True)
+                        df[col] = df[col].cat.add_categories(col_nan_category) #argument 'inplace' is deprecated and removed
                         df[col].fillna(col_nan_category, inplace=True)
 
                 # NaNs in numerical columns
@@ -79,7 +79,7 @@ class Processor:
                             df.loc[bool_series, col_nan_name] = cat_index
                         df.loc[col_all_nan_indices, col] = 0
 
-                        df[col_nan_name] = df[col_nan_name].astype('category')
+                        df.loc[:,col_nan_name] = df[col_nan_name].astype('category')
                         self.spop.df_dtypes[col_nan_name] = 'category'
 
         return df

@@ -57,6 +57,7 @@ class Synthpop:
         self.validator.check_processor()
         # preprocess
         processed_df = self.processor.preprocess(df, self.df_dtypes)
+        print(processed_df)
         self.processed_df_columns = processed_df.columns.tolist()
         self.n_processed_df_columns = len(self.processed_df_columns)
 
