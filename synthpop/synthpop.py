@@ -56,6 +56,10 @@ class Synthpop:
         # check processor
         self.validator.check_processor()
         # preprocess
+
+        #processor.preprocess has side effects on the processor object and on this (self) object
+        #processor.processing_dict[NAN_KEY][col]
+        #spop.df_dtypes[col_nan_name]
         processed_df = self.processor.preprocess(df, self.df_dtypes)
         print(processed_df)
         self.processed_df_columns = processed_df.columns.tolist()

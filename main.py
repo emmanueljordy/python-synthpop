@@ -3,9 +3,9 @@ import pandas as pd
 import pyreadr
 
 def synBar():
-    df = pd.read_csv("bar_pass_prediction.csv")[[ 'race1', 'ugpa', 'bar']]
+    df = pd.read_csv("bar_pass_prediction.csv")[['sex', 'race1', 'ugpa', 'bar']]
     print(df.dtypes)
-    dtype_map = { 'race1': 'category', 'ugpa': 'float', 'bar': 'category'}
+    dtype_map = {'sex': 'float', 'race1': 'category', 'ugpa': 'float', 'bar': 'category'}
 
     for (k,v) in dtype_map.items():
 
@@ -19,6 +19,7 @@ def synBar():
     synth_df = spop.generate(len(df))
 
     print(synth_df.head())
+    print(synth_df.isna().sum())
 
 def synSD2011():
     df0 = pyreadr.read_r("SD2011.rda")['SD2011']

@@ -66,7 +66,7 @@ class Processor:
                         # insert new column in df
                         # TODO beware of '_NaN' naming
                         col_nan_name = col + '_NaN'
-                        df.insert(df.columns.get_loc(col), col_nan_name, 0)
+                        df.insert(df.columns.get_loc(col), col_nan_name, 0) #inserts columName_NaN in dataframe
 
                         self.processing_dict[NAN_KEY][col] = {'col_nan_name': col_nan_name,
                                                               'dtype': self.spop.df_dtypes[col],
@@ -82,9 +82,10 @@ class Processor:
                         df.loc[:,col_nan_name] = df[col_nan_name].astype('category')
                         self.spop.df_dtypes[col_nan_name] = 'category'
 
-        return df
+        return df #Sex_NaN is a part of this data frame
 
     def postprocess(self, synth_df):
+        #sex_NaN is not a column of synth_df
         for col, processing_numtocat_col_dict in self.processing_dict[NUMTOCAT_KEY].items():
             synth_df[col] = synth_df[col].astype(object)
             col_synth_df = synth_df[col].copy()
@@ -110,10 +111,12 @@ class Processor:
                 synth_df[col] = synth_df[col].astype('category')
 
             # NaNs in numerical columns
-            elif processing_nan_col_dict['dtype'] in NUM_COLS_DTYPES:
-                for col_nan_flag, col_nan_value in processing_nan_col_dict['nan_flags'].items():
-                    nan_flag_indices = synth_df[processing_nan_col_dict['col_nan_name']] == col_nan_flag
-                    synth_df.loc[nan_flag_indices, col] = col_nan_value
-                synth_df.drop(columns=processing_nan_col_dict['col_nan_name'], inplace=True)
+            #The code below sets changes NANs in numerical columns to a given value, and removes the NAN indicator column.
+            #The NAN_indicator columns are not synthesised.
+            # elif processing_nan_col_dict['dtype'] in NUM_COLS_DTYPES:
+            #     for col_nan_flag, col_nan_value in processing_nan_col_dict['nan_flags'].items():
+            #         nan_flag_indices = synth_df[processing_nan_col_dict['col_nan_name']] == col_nan_flag #expects columnName_NAN in the synthetic data set
+            #         synth_df.loc[nan_flag_indices, col] = col_nan_value
+            #     synth_df.drop(columns=processing_nan_col_dict['col_nan_name'], inplace=True)
 
         return synth_df
