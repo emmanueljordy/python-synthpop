@@ -15,6 +15,7 @@ class Processor:
                                 NAN_KEY: {}
                                 }
 
+
     def preprocess(self, df, dtypes):
         for col in self.spop.visited_columns:
             col_nan_indices = df[col].isna()

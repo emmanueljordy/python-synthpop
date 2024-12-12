@@ -14,6 +14,7 @@ def synBar():
 
     print(df.dtypes)
     spop = Synthpop()
+
     spop.fit(df,dtype_map)
 
     synth_df = spop.generate(len(df))
@@ -26,6 +27,7 @@ def synSD2011():
     #pd.read_csv("bar_pass_prediction.csv")
     print(df0.dtypes)
     df = df0[['age', 'unempdur', 'income', 'sex']]#df0[['sex', 'race1', 'ugpa', 'bar']]
+    print(df.isna().sum())
     #df.to_excel("inputData.xlsx")
     dtype_map ={
         "age":"float",

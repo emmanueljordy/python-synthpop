@@ -41,6 +41,27 @@ class Synthpop:
         # check init
         self.validator.check_init()
 
+    def pre_preprocess(self,df,dtypes,nan_fill):
+
+        for column in df:
+            if dtypes[column] != 'float':
+                continue
+            maybe_nans = df[column].isnull()
+            if not maybe_nans.any():
+                continue
+
+            df.loc[maybe_nans,column] = nan_fill
+
+            nan_col_name = column+"_NaN"
+            df.loc[:,nan_col_name] = maybe_nans
+
+            dtypes[nan_col_name] = 'category'
+
+
+        return df,dtypes
+
+    def post_postprocessing(self,syn_df):
+        return syn_df
     def fit(self, df, dtypes=None):
         # TODO check df and check/EXTRACT dtypes
         # - all column names of df are unique
@@ -48,7 +69,7 @@ class Synthpop:
         # - all dtypes of df are correct ('int', 'float', 'datetime', 'category', 'bool'; no object)
         # - can map dtypes (if given) correctly to df
         # should create map col: dtype (self.df_dtypes)
-
+        df,dtypes = self.pre_preprocess(df,dtypes,-8)
         self.df_columns = df.columns.tolist()
         self.n_df_rows, self.n_df_columns = np.shape(df)
         self.df_dtypes = dtypes
