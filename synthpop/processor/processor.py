@@ -83,7 +83,7 @@ class Processor:
                         df.loc[:,col_nan_name] = df[col_nan_name].astype('category')
                         self.spop.df_dtypes[col_nan_name] = 'category'
 
-        return df #Sex_NaN is a part of this data frame
+        return df
 
     def postprocess(self, synth_df):
         #sex_NaN is not a column of synth_df
@@ -113,7 +113,6 @@ class Processor:
 
             # NaNs in numerical columns
             #The code below sets changes NANs in numerical columns to a given value, and removes the NAN indicator column.
-            #The NAN_indicator columns are not synthesised.
             elif processing_nan_col_dict['dtype'] in NUM_COLS_DTYPES:
                 for col_nan_flag, col_nan_value in processing_nan_col_dict['nan_flags'].items():
                     nan_flag_indices = synth_df[processing_nan_col_dict['col_nan_name']] == col_nan_flag #expects columnName_NAN in the synthetic data set
