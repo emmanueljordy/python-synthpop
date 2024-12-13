@@ -37,7 +37,7 @@ class Synthpop:
         self.numtocat = numtocat
         self.catgroups = catgroups
         self.seed = seed
-
+        self.map_column_to_NaN_column = {}
         # check init
         self.validator.check_init()
 
@@ -54,6 +54,7 @@ class Synthpop:
 
             nan_col_name = column+"_NaN"
             df.loc[:,nan_col_name] = maybe_nans
+            self.map_column_to_NaN_column[column] = nan_col_name
 
             dtypes[nan_col_name] = 'category'
 
@@ -61,6 +62,14 @@ class Synthpop:
         return df,dtypes
 
     def post_postprocessing(self,syn_df):
+        for column in syn_df:
+
+            if column in self.map_column_to_NaN_column.keys():
+                nan_col_name = self.map_column_to_NaN_column[column]
+                column_NaN_at = syn_df[nan_col_name]
+                syn_df.loc[column_NaN_at,column] = None
+                syn_df = syn_df.drop(columns=nan_col_name)
+
         return syn_df
     def fit(self, df, dtypes=None):
         # TODO check df and check/EXTRACT dtypes
@@ -117,7 +126,7 @@ class Synthpop:
         # postprocess
         processed_synth_df = self.processor.postprocess(synth_df)
 
-        return processed_synth_df
+        return self.post_postprocessing(processed_synth_df)
 
     def _generate(self):
         synth_df = pd.DataFrame(data=np.zeros([self.k, len(self.visit_sequence)]), columns=self.visit_sequence.index)

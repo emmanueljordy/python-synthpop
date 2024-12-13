@@ -17,10 +17,17 @@ class TestProcessing(unittest.TestCase):
         self.assertTrue(res['a_NaN'][2])
         self.assertEqual(res['a'][2], -8)
         self.assertEqual(dtype_res['a_NaN'],'category')
+        self.assertEqual(spop.map_column_to_NaN_column['a'],'a_NaN')
 
     def test_apply_and_remove_added_NaN_columns(self):
-        df = pd.DataFrame({'a':[1,2,np.nan],'a_NaN':[False,False,True], 'b':[1,1,1], 'c':['x','y',None]})
+        df = pd.DataFrame({'a':[1,2,-8],'a_NaN':[False,True,False], 'b':[1,1,1], 'c':['x','y',None]})
+
         spop = Synthpop()
+        spop.map_column_to_NaN_column = {'a':'a_NaN'}
+
+        res = spop.post_postprocessing(df)
+        self.assertTrue(np.isnan(res['a'][1]), "NaNs should be placed where indicated")
+        self.assertFalse('a_NaN' in res, "indicator columns should be removed")
 
 
 if __name__ == '__main__':

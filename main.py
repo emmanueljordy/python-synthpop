@@ -19,7 +19,10 @@ def synBar():
 
     synth_df = spop.generate(len(df))
 
+    print("synthetische data:")
     print(synth_df.head())
+
+    print("aantal NaNs:")
     print(synth_df.isna().sum())
 
 def synSD2011():
@@ -50,4 +53,4 @@ def synSD2011():
     print(synth_df.head())
 
 
-synBar()
+synSD2011()
