@@ -114,10 +114,10 @@ class Processor:
             # NaNs in numerical columns
             #The code below sets changes NANs in numerical columns to a given value, and removes the NAN indicator column.
             #The NAN_indicator columns are not synthesised.
-            # elif processing_nan_col_dict['dtype'] in NUM_COLS_DTYPES:
-            #     for col_nan_flag, col_nan_value in processing_nan_col_dict['nan_flags'].items():
-            #         nan_flag_indices = synth_df[processing_nan_col_dict['col_nan_name']] == col_nan_flag #expects columnName_NAN in the synthetic data set
-            #         synth_df.loc[nan_flag_indices, col] = col_nan_value
-            #     synth_df.drop(columns=processing_nan_col_dict['col_nan_name'], inplace=True)
+            elif processing_nan_col_dict['dtype'] in NUM_COLS_DTYPES:
+                for col_nan_flag, col_nan_value in processing_nan_col_dict['nan_flags'].items():
+                    nan_flag_indices = synth_df[processing_nan_col_dict['col_nan_name']] == col_nan_flag #expects columnName_NAN in the synthetic data set
+                    synth_df.loc[nan_flag_indices, col] = col_nan_value
+                synth_df.drop(columns=processing_nan_col_dict['col_nan_name'], inplace=True)
 
         return synth_df

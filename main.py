@@ -3,14 +3,20 @@ import pandas as pd
 import pyreadr
 
 def synBar():
-    df = pd.read_csv("bar_pass_prediction.csv")[['sex', 'race1', 'ugpa', 'bar']]
+    df = pd.read_csv("bar_pass_prediction.csv")
     print(df.dtypes)
-    dtype_map = {'sex': 'float', 'race1': 'category', 'ugpa': 'float', 'bar': 'category'}
+    dtype_map = {}
 
-    for (k,v) in dtype_map.items():
-
-        if v == 'category':
-            df = df.astype({k : "category"})
+    for k in df.dtypes.keys():
+        match df.dtypes[k]:
+            case 'float64':
+                dtype_map[k] = 'float'
+            case 'category':
+                dtype_map[k] = 'category'
+                df = df.astype({k : "category"})
+            case _:
+                dtype_map[k]= 'category'
+                df = df.astype({k : "category"})
 
     print(df.dtypes)
     spop = Synthpop()
@@ -28,22 +34,35 @@ def synBar():
 def synSD2011():
     df0 = pyreadr.read_r("SD2011.rda")['SD2011']
     #pd.read_csv("bar_pass_prediction.csv")
-    print(df0.dtypes)
-    df = df0[['age', 'unempdur', 'income', 'sex']]#df0[['sex', 'race1', 'ugpa', 'bar']]
-    print(df.isna().sum())
+    #print(df0.dtypes)
+    df = df0#df0[['sex', 'race1', 'ugpa', 'bar']]
+    #print(df.isna().sum())
     #df.to_excel("inputData.xlsx")
     dtype_map ={
-        "age":"float",
-        "unempdur":"float",
-        "income":"float",
-        "sex":"category"
+        # "age":"float",
+        # "unempdur":"float",
+        # "income":"float",
+        # "sex":"category"
     }
+
+    for k in df.dtypes.keys():
+        match df.dtypes[k]:
+            case 'float64':
+                dtype_map[k] = 'float'
+            case 'category':
+                dtype_map[k] = 'category'
+                df = df.astype({k : "category"})
+            case _:
+                dtype_map[k]= 'category'
+                df = df.astype({k : "category"})
+
+    print(dtype_map)
     #{'sex': 'float', 'race1': 'category', 'ugpa': 'float', 'bar': 'category'}
     # for (k,v) in dtype_map.items():
     #     if v == 'category':
     #         df[k] = df[k].astype('category')
 
-    print(df.dtypes)
+
     r = df.dtypes.keys()
     spop = Synthpop()
     spop.fit(df,dtype_map)
@@ -53,4 +72,4 @@ def synSD2011():
     print(synth_df.head())
 
 
-synSD2011()
+synBar()
