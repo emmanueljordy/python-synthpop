@@ -35,7 +35,7 @@ def synSD2011():
     df0 = pyreadr.read_r("SD2011.rda")['SD2011']
     #pd.read_csv("bar_pass_prediction.csv")
     #print(df0.dtypes)
-    df = df0#df0[['sex', 'race1', 'ugpa', 'bar']]
+    df = df0[['age', 'unempdur', 'income', 'sex']]
     #print(df.isna().sum())
     #df.to_excel("inputData.xlsx")
     dtype_map ={
@@ -64,7 +64,7 @@ def synSD2011():
 
 
     r = df.dtypes.keys()
-    spop = Synthpop()
+    spop = Synthpop(visit_sequence=['age', 'unempdur', 'income_NaN','income', 'sex'])
     spop.fit(df,dtype_map)
 
     synth_df = spop.generate(len(df))

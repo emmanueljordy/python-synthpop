@@ -18,6 +18,16 @@ class TestProcessing(unittest.TestCase):
         self.assertEqual(res['a'][2], -8)
         self.assertEqual(dtype_res['a_NaN'],'category')
         self.assertEqual(spop.map_column_to_NaN_column['a'],'a_NaN')
+    def test_make_visit_sequence_when_one_is_given(self):
+
+        visit_seq = ['x','a','b']
+        spop = Synthpop(visit_sequence=visit_seq)
+        spop.map_column_to_NaN_column = {'a':'a_NaN','c':'c_NaN'}
+
+        spop.include_nan_columns()
+
+        self.assertSequenceEqual(spop.visit_sequence,['x','a_NaN','a','b'])
+
 
     def test_apply_and_remove_added_NaN_columns(self):
         df = pd.DataFrame({'a':[1,2,-8],'a_NaN':[False,True,False], 'b':[1,1,1], 'c':['x','y',None]})

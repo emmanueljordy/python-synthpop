@@ -40,6 +40,14 @@ class Synthpop:
         self.map_column_to_NaN_column = {}
         # check init
         self.validator.check_init()
+    def include_nan_columns(self):
+        for (col,nan_col) in self.map_column_to_NaN_column.items():
+
+            if col not in self.visit_sequence:
+                continue
+
+            index_of_col = self.visit_sequence.index(col)
+            self.visit_sequence.insert(index_of_col,nan_col)
 
     def pre_preprocess(self,df,dtypes,nan_fill):
 
@@ -79,7 +87,10 @@ class Synthpop:
         # - can map dtypes (if given) correctly to df
         # should create map col: dtype (self.df_dtypes)
         df,dtypes = self.pre_preprocess(df,dtypes,-8)
+
         self.df_columns = df.columns.tolist()
+        self.visit_sequence = df.columns.tolist()
+        self.include_nan_columns()
         self.n_df_rows, self.n_df_columns = np.shape(df)
         self.df_dtypes = dtypes
 
