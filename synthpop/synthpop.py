@@ -40,9 +40,9 @@ class Synthpop:
         self.map_column_to_NaN_column = {}
         # check init
         self.validator.check_init()
+
     def include_nan_columns(self):
         for (col,nan_col) in self.map_column_to_NaN_column.items():
-
             if col not in self.visit_sequence:
                 continue
 
@@ -50,7 +50,6 @@ class Synthpop:
             self.visit_sequence.insert(index_of_col,nan_col)
 
     def pre_preprocess(self,df,dtypes,nan_fill):
-
         for column in df:
             if dtypes[column] != 'float':
                 continue
@@ -66,12 +65,10 @@ class Synthpop:
 
             dtypes[nan_col_name] = 'category'
 
-
         return df,dtypes
 
     def post_postprocessing(self,syn_df):
         for column in syn_df:
-
             if column in self.map_column_to_NaN_column.keys():
                 nan_col_name = self.map_column_to_NaN_column[column]
                 column_NaN_at = syn_df[nan_col_name]
@@ -79,6 +76,7 @@ class Synthpop:
                 syn_df = syn_df.drop(columns=nan_col_name)
 
         return syn_df
+
     def fit(self, df, dtypes=None):
         # TODO check df and check/EXTRACT dtypes
         # - all column names of df are unique
@@ -89,7 +87,13 @@ class Synthpop:
         df,dtypes = self.pre_preprocess(df,dtypes,-8)
 
         self.df_columns = df.columns.tolist()
-        self.visit_sequence = df.columns.tolist()
+        # Only set visit_sequence if not provided in init
+        if self.visit_sequence is None:
+            self.visit_sequence = df.columns.tolist()
+        elif isinstance(self.visit_sequence, list) and all(isinstance(x, int) for x in self.visit_sequence):
+            # Convert numeric indices to column names
+            self.visit_sequence = [df.columns[i] for i in self.visit_sequence]
+        
         self.include_nan_columns()
         self.n_df_rows, self.n_df_columns = np.shape(df)
         self.df_dtypes = dtypes
@@ -140,6 +144,7 @@ class Synthpop:
         return self.post_postprocessing(processed_synth_df)
 
     def _generate(self):
+        # Only generate columns that were in the visit sequence
         synth_df = pd.DataFrame(data=np.zeros([self.k, len(self.visit_sequence)]), columns=self.visit_sequence.index)
 
         for col, visit_step in self.visit_sequence.sort_values().items():
