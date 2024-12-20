@@ -1,4 +1,4 @@
-![image](https://github.com/NGO-Algorithm-Audit/python-synthpop/blob/main/images/header.png)
+![image](https://github.com/NGO-Algorithm-Audit/python-synthpop/blob/main/images/Header.png)
 
 # python-synthpop
 
