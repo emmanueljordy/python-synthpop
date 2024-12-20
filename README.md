@@ -226,6 +226,3 @@ education         1          1       0          0               1
 marital-status    1          1       0          0               0
 ```
 
-# License
-
-This project is being developed at Hazy Limited and is released under MIT license.
