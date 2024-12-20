@@ -8,7 +8,7 @@ With this library synthetic tabular data can be produced. Synthetic data refers 
 
 This Python library is a reimplementation of the R package `synthpop`. Synthetic data can be generated using the `.generate()` method after fitting the a synntesizer to the original data with the `.fit()` method. The process can be largely automated using default settings or customized through user-defined settings. Optional parameters can be used to influence the disclosure risk and the analytical quality of the synthetic data.
 
-☁️ [Web app](https://local-first-bias-detection.s3.eu-central-1.amazonaws.com/synthetic-data.html) – a demo of the synthetic data generation using the `python-synthpop`
+☁️ [Web app](https://local-first-bias-detection.s3.eu-central-1.amazonaws.com/synthetic-data.html) – a demo of the synthetic data generation using `python-synthpop` through [WebAssembly](https://github.com/NGO-Algorithm-Audit/local-first-web-tool)
 
 # Installation
 
