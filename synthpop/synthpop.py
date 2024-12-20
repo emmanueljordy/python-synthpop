@@ -49,6 +49,10 @@ class Synthpop:
             index_of_col = self.visit_sequence.index(col)
             self.visit_sequence.insert(index_of_col,nan_col)
 
+    """
+    Adding NaN - indicator columns before the original py-synthpop synthesis
+    This only applies for numeric columns.
+    """
     def pre_preprocess(self,df,dtypes,nan_fill):
 
         for column in df:
@@ -69,6 +73,11 @@ class Synthpop:
 
         return df,dtypes
 
+
+    """
+    This function sets values to NaN when the synthesized nan-indicator columns are 1.
+    This only applies for numeric columns.
+    """
     def post_postprocessing(self,syn_df):
         for column in syn_df:
 
