@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pySynthpop",
-    version="0.1.0",
+    version="0.0.2",
     author="Algorithm Audit",
     description="Python implementation of the R package synthpop for generating synthetic data",
     long_description=long_description,
