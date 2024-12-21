@@ -4,13 +4,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="pySynthpop",
-    version="0.0.2",
+    name="python-synthpop",
+    version="0.0.1",
     author="Algorithm Audit",
     description="Python implementation of the R package synthpop for generating synthetic data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/algorithm-audit/pySynthpop",
+    url="https://github.com/algorithm-audit/python-synthpop",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
