@@ -77,13 +77,48 @@ class Synthpop:
 
         return syn_df
 
+    def _infer_dtypes(self, df):
+        """Automatically infer data types from DataFrame.
+        
+        Args:
+            df: pandas DataFrame
+            
+        Returns:
+            dict: Mapping of column names to inferred types ('int', 'float', 'datetime', 'category', 'bool')
+        """
+        dtypes = {}
+        for column in df.columns:
+            pd_dtype = str(df[column].dtype)
+            
+            if pd_dtype.startswith('int'):
+                dtypes[column] = 'int'
+            elif pd_dtype.startswith('float'):
+                dtypes[column] = 'float'
+            elif pd_dtype.startswith('datetime'):
+                dtypes[column] = 'datetime'
+            elif pd_dtype.startswith('bool'):
+                dtypes[column] = 'bool'
+            else:
+                # For object or string dtypes, check if it should be categorical
+                dtypes[column] = 'category'
+                
+        return dtypes
+
     def fit(self, df, dtypes=None):
-        # TODO check df and check/EXTRACT dtypes
-        # - all column names of df are unique
-        # - all columns data of df are consistent
-        # - all dtypes of df are correct ('int', 'float', 'datetime', 'category', 'bool'; no object)
-        # - can map dtypes (if given) correctly to df
-        # should create map col: dtype (self.df_dtypes)
+        """Fit the synthetic data generator.
+        
+        Args:
+            df: pandas DataFrame to learn from
+            dtypes: Optional dict mapping column names to types. If not provided, types will be inferred.
+        """
+        # Infer dtypes if not provided
+        if dtypes is None:
+            dtypes = self._infer_dtypes(df)
+            
+        # Validate DataFrame
+        if not df.columns.is_unique:
+            raise ValueError("DataFrame column names must be unique")
+            
         df,dtypes = self.pre_preprocess(df,dtypes,-8)
 
         self.df_columns = df.columns.tolist()
