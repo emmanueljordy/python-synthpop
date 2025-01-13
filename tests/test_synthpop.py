@@ -4,12 +4,12 @@ from synthpop import Synthpop
 from datasets.adult import df, dtypes
 
 def test_synthpop_default_parameters():
-    """Test Synthpop with default parameters using Adult dataset."""
+    """Test Synthpop with default parameters and automatic type inference."""
     # Initialize Synthpop
     spop = Synthpop()
     
-    # Fit the model
-    spop.fit(df, dtypes)
+    # Fit the model with automatic type inference
+    spop.fit(df)
     
     # Generate synthetic data
     synth_df = spop.generate(len(df))
@@ -19,6 +19,11 @@ def test_synthpop_default_parameters():
     
     # Verify the synthetic dataframe has the same columns as original
     assert all(synth_df.columns == df.columns)
+    
+    # Verify inferred dtypes match expected types
+    assert spop.df_dtypes['age'] == 'int'
+    assert spop.df_dtypes['workclass'] == 'category'
+    assert spop.df_dtypes['education'] == 'category'
     
     # Verify the method attribute contains expected default values
     assert isinstance(spop.method, pd.Series)
@@ -37,6 +42,25 @@ def test_synthpop_default_parameters():
     assert all(spop.predictor_matrix.index == df.columns)
     assert all(spop.predictor_matrix.columns == df.columns)
 
+def test_synthpop_with_manual_dtypes():
+    """Test Synthpop with manually specified dtypes."""
+    # Initialize Synthpop
+    spop = Synthpop()
+    
+    # Fit the model with explicit dtypes
+    spop.fit(df, dtypes)
+    
+    # Verify the dtypes were set correctly
+    for col, dtype in dtypes.items():
+        assert spop.df_dtypes[col] == dtype
+    
+    # Generate synthetic data
+    synth_df = spop.generate(len(df))
+    
+    # Verify the synthetic dataframe has the same shape and columns
+    assert synth_df.shape == df.shape
+    assert all(synth_df.columns == df.columns)
+
 def test_synthpop_custom_visit_sequence():
     """Test Synthpop with custom visit sequence using Adult dataset."""
     # Define custom visit sequence
@@ -45,8 +69,8 @@ def test_synthpop_custom_visit_sequence():
     # Initialize Synthpop with custom visit sequence
     spop = Synthpop(visit_sequence=visit_sequence)
     
-    # Fit the model
-    spop.fit(df, dtypes)
+    # Fit the model with automatic type inference
+    spop.fit(df)
     
     # Generate synthetic data
     synth_df = spop.generate(len(df))
