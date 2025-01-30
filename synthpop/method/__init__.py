@@ -6,7 +6,7 @@ from synthpop.method.cart import CARTMethod
 from synthpop.method.norm import NormMethod
 from synthpop.method.normrank import NormRankMethod
 from synthpop.method.polyreg import PolyregMethod
-
+from synthpop.method.gaussian_copula import GaussianCopulaMethod
 
 EMPTY_METHOD = ''
 SAMPLE_METHOD = 'sample'
@@ -17,6 +17,7 @@ PARAMETRIC_METHOD = 'parametric'
 NORM_METHOD = 'norm'
 NORMRANK_METHOD = 'normrank'
 POLYREG_METHOD = 'polyreg'
+GC_METHOD = 'gaussian copula' 
 
 
 METHODS_MAP = {EMPTY_METHOD: EmptyMethod,
@@ -24,14 +25,15 @@ METHODS_MAP = {EMPTY_METHOD: EmptyMethod,
                CART_METHOD: CARTMethod,
                NORM_METHOD: NormMethod,
                NORMRANK_METHOD: NormRankMethod,
-               POLYREG_METHOD: PolyregMethod
+               POLYREG_METHOD: PolyregMethod,
+               GC_METHOD: GaussianCopulaMethod
                }
 
 
-ALL_METHODS = (EMPTY_METHOD, SAMPLE_METHOD, CART_METHOD, PARAMETRIC_METHOD, NORM_METHOD, NORMRANK_METHOD, POLYREG_METHOD)
-DEFAULT_METHODS = (CART_METHOD, PARAMETRIC_METHOD)
-INIT_METHODS = (SAMPLE_METHOD, CART_METHOD, PARAMETRIC_METHOD)
-NA_METHODS = (CART_METHOD, NORM_METHOD, NORMRANK_METHOD, POLYREG_METHOD)
+ALL_METHODS = (EMPTY_METHOD, SAMPLE_METHOD, CART_METHOD, PARAMETRIC_METHOD, NORM_METHOD, NORMRANK_METHOD, POLYREG_METHOD, GC_METHOD)
+DEFAULT_METHODS = (CART_METHOD, PARAMETRIC_METHOD, GC_METHOD)
+INIT_METHODS = (SAMPLE_METHOD, CART_METHOD, PARAMETRIC_METHOD, GC_METHOD)
+NA_METHODS = (CART_METHOD, NORM_METHOD, NORMRANK_METHOD, POLYREG_METHOD, GC_METHOD)
 
 
 # method maps
@@ -49,6 +51,13 @@ CART_METHOD_MAP = {'int': CART_METHOD,
                    'category': CART_METHOD
                    }
 
+GC_METHOD_MAP = {'int': GC_METHOD,
+                 'float': GC_METHOD,
+                 'datetime': GC_METHOD,
+                 'bool': GC_METHOD,
+                 'category': GC_METHOD
+                 }
+
 SAMPLE_METHOD_MAP = {'int': SAMPLE_METHOD,
                      'float': SAMPLE_METHOD,
                      'datetime': SAMPLE_METHOD,
@@ -57,7 +66,8 @@ SAMPLE_METHOD_MAP = {'int': SAMPLE_METHOD,
                      }
 
 DEFAULT_METHODS_MAP = {CART_METHOD: CART_METHOD_MAP,
-                       PARAMETRIC_METHOD: PARAMETRIC_METHOD_MAP
+                       PARAMETRIC_METHOD: PARAMETRIC_METHOD_MAP,
+                       GC_METHOD: GC_METHOD_MAP
                        }
 
 
@@ -68,5 +78,6 @@ INIT_METHODS_MAP[SAMPLE_METHOD] = SAMPLE_METHOD_MAP
 CONT_TO_CAT_METHODS_MAP = {CART_METHOD: CART_METHOD,
                            NORM_METHOD: POLYREG_METHOD,
                            NORMRANK_METHOD: POLYREG_METHOD,
-                           POLYREG_METHOD: POLYREG_METHOD
+                           POLYREG_METHOD: POLYREG_METHOD,
+                           GC_METHOD: GC_METHOD
                            }

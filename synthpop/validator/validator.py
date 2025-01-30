@@ -85,10 +85,12 @@ class Validator:
         if step == INIT_STEP:
             # validate method type is allowed
             method_type = self.check_valid_type('method', return_type=True)
+            print(method_type)
 
             if isinstance(method_type, str):
                 # if method type is str
                 # validate method is in allowed init methods
+                print(method_type)
                 assert self.spop.method in INIT_METHODS
 
             elif isinstance(method_type, list):
@@ -100,21 +102,18 @@ class Validator:
             first_visited_col = self.spop.visit_sequence.index[self.spop.visit_sequence == 0].values[0]
 
             if self.spop.method is None:
-                print('True1')
                 # if method is not specified
                 # for each column set method to default method according to its dtype (method for first visited column is sample_method)
                 self.spop.method = [DEFAULT_METHODS_MAP[self.spop.default_method][self.spop.df_dtypes[col]] if col != first_visited_col else SAMPLE_METHOD
                                     for col in self.spop.df_columns]
 
             elif isinstance(self.spop.method, str):
-                print('True2')
                 # if method type is str
                 # for each column set method to the corresponding allowed method according to its dtype (method for first visited column is sample_method)
                 self.spop.method = [INIT_METHODS_MAP[self.spop.method][self.spop.df_dtypes[col]] if col != first_visited_col else SAMPLE_METHOD
                                     for col in self.spop.df_columns]
 
             else:
-                print('True3')
                 # validate method for first visited column with non empty method is sample_method
                 for col, visit_order in self.spop.visit_sequence.sort_values().items():
                     col_method = self.spop.method[self.spop.df_columns.index(col)]
@@ -141,6 +140,7 @@ class Validator:
 
     def visit_sequence_validator(self, step=None):
         if step == INIT_STEP:
+            print('A')
             # validate visit_sequence type is allowed
             visit_sequence_type = self.check_valid_type('visit_sequence', return_type=True)
 
@@ -158,20 +158,19 @@ class Validator:
                 assert all(isinstance(col, int) for col in self.spop.visit_sequence) or all(isinstance(col, str) for col in self.spop.visit_sequence)
 
         if step == PROCESSOR_STEP:
+            print('TestX')
             if self.spop.visit_sequence is None:
                 # if visit_sequence is not specified
                 # visit all columns in a row
                 self.spop.visit_sequence = [col.item() for col in np.arange(self.spop.n_df_columns)]
 
             if isinstance(self.spop.visit_sequence[0], int):
-                print('True1')
                 # if visit_sequence is list of column indices
                 # validate every index in visit_sequence is a valid column index
                 assert set(self.spop.visit_sequence).issubset(set(np.arange(self.spop.n_df_columns)))
                 # transform visit_sequence into a list of column names
                 self.spop.visit_sequence = [self.spop.df_columns[i] for i in self.spop.visit_sequence]
             else:
-                print('True2')
                 # validate every column name in visit_sequence is a valid column name
                 assert set(self.spop.visit_sequence).issubset(set(self.spop.df_columns))
 

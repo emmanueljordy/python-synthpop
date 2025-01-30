@@ -7,7 +7,7 @@ from synthpop.processor import Processor
 # global variables
 from synthpop import NUM_COLS_DTYPES
 from synthpop.processor import NAN_KEY
-from synthpop.method import CART_METHOD, METHODS_MAP, NA_METHODS
+from synthpop.method import CART_METHOD, GC_METHOD, METHODS_MAP, NA_METHODS
 
 
 class Synthpop:

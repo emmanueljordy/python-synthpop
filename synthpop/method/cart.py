@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
-from synthpop.method import Method, proper, smooth
+from synthpop.method import Method, proper, smooth 
 # global variables
 from synthpop import NUM_COLS_DTYPES, CAT_COLS_DTYPES
 
