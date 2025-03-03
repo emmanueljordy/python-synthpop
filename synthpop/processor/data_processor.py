@@ -16,7 +16,6 @@ class DataProcessor:
 
     Handles:
     - Type conversions (categorical ↔ numerical).
-    - Missing value handling.
     - Feature transformations for Gaussian Copula.
     - Reverse transformations to restore original data types.
     """
@@ -49,7 +48,7 @@ class DataProcessor:
         return processed_data
 
     def _preprocess(self, data: pd.DataFrame) -> pd.DataFrame:
-        """Handles encoding, scaling, and missing values."""
+        """Handles encoding, scaling."""
         data = data.copy()
 
         for col, dtype in self.metadata.items():
@@ -63,7 +62,6 @@ class DataProcessor:
 
             elif dtype == "numerical":
                 scaler = StandardScaler()
-                data[col] = self._handle_missing_values(data[col])
                 data[col] = scaler.fit_transform(data[[col]])
                 self.scalers[col] = scaler
 
@@ -71,7 +69,10 @@ class DataProcessor:
                 data[col] = data[col].astype(int)  # Convert True/False to 1/0
 
             elif dtype == "datetime":
-                data[col] = pd.to_datetime(data[col]).astype(int) // 10**9  # Convert to Unix timestamp
+                data[col] = data[col].apply(lambda x: x.timestamp() if pd.notnull(x) else np.nan)  # Convert to Unix timestamp
+            
+            elif dtype == "timedelta": 
+                data[col] = pd.to_timedelta(data[col]).dt.total_seconds()
 
         return data
 
@@ -93,6 +94,9 @@ class DataProcessor:
 
             elif dtype == "datetime":
                 synthetic_data[col] = pd.to_datetime(synthetic_data[col], unit='s')
+
+            elif dtype == "timedelta":
+                synthetic_data[col] = pd.to_timedelta(synthetic_data[col], unit='s')
 
         return synthetic_data[self.original_columns]  # Restore original column order
 
