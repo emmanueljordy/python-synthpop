@@ -1,1 +1,5 @@
-from synthpop.validator.validator import Validator
+from .validator import Validator
+
+__all__ = [
+    "Validator",
+]
