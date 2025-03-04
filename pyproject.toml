@@ -27,3 +27,4 @@ dev = [
 [tool.setuptools_scm]
 version_scheme = "post-release"
 local_scheme = "dirty-tag"
+write_to = "src/python_synthpop/_version.py"  # Optional, writes version to file
