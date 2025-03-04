@@ -5,7 +5,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="python-synthpop",
-    version="0.0.2",
+    use_scm_version=True,  # Dynamically use Git tags for versioning
+    setup_requires=["setuptools_scm"],  # Ensure setuptools_scm is available
     author="Algorithm Audit",
     description="Python implementation of the R package synthpop for generating synthetic data",
     long_description=long_description,
