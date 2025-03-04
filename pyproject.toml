@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-synthpop"
-version = "0.0.2"
 description = "Python implementation of the R package synthpop for generating synthetic data"
 authors = [
     {name = "Algorithm Audit"}
@@ -24,3 +23,7 @@ license = {file = "LICENSE"}
 dev = [
     "pytest>=7.0.0",
 ]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "dirty-tag"
