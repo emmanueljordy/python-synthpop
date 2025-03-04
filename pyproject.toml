@@ -8,6 +8,7 @@ description = "Python implementation of the R package synthpop for generating sy
 authors = [
     {name = "Algorithm Audit"}
 ]
+dynamic = ["version"]
 requires-python = ">=3.8"
 dependencies = [
     "numpy>=1.20.0",
