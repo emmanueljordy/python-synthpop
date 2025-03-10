@@ -8,6 +8,7 @@ setup(
     use_scm_version=True,  # Dynamically use Git tags for versioning
     setup_requires=["setuptools_scm"],  # Ensure setuptools_scm is available
     author="Algorithm Audit",
+    author_email='info@algorithmaudit.eu',
     description="Python implementation of the R package synthpop for generating synthetic data",
     long_description=long_description,
     long_description_content_type="text/markdown",
