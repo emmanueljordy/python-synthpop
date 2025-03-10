@@ -5,6 +5,7 @@ from sklearn.experimental import enable_iterative_imputer  # For MICE and EM
 from sklearn.impute import SimpleImputer, IterativeImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
+from .data_processor import DataProcessor
 import warnings
 
 
@@ -204,6 +205,11 @@ class MissingDataHandler:
     def apply_imputation(self, df: pd.DataFrame, missingness: dict) -> pd.DataFrame:
         """Automatically applies imputation based on missingness type and column data type."""
         df = df.copy()
+        metadata = self.get_column_dtypes(df)
+        processor = DataProcessor(metadata)
+        processed_data = processor.preprocess(df)
+        imputer = IterativeImputer(random_state=42)
+        df_iterative = pd.DataFrame(imputer.fit_transform(processed_data), columns= df.columns)
         for col, mtype in missingness.items():
             if df[col].isna().sum() == 0:
                 continue
@@ -218,16 +224,30 @@ class MissingDataHandler:
                     df[col].fillna(df[col].mode()[0], inplace=True)
                 elif mtype == "MAR":
                     # Use get_dummies encoding for categorical data
-                    dummies = pd.get_dummies(df[col], prefix=col, dummy_na=True)
+                    le = LabelEncoder()
+                    non_missing = df[col].dropna()
+                    le.fit(non_missing)
+                    predictor_cols = [c for c in df.columns if c != col]
+                    predictors = df_iterative[predictor_cols].copy()
+                    df_copy = df.copy()
+                    df_copy[f"{col}_encoded"] = df_copy[col].apply(lambda x: le.transform([x])[0] if pd.notna(x) else np.nan)
+    
+                    # Combine predictors and the encoded target.
+                    combined = pd.concat([predictors, df_copy[[f"{col}_encoded"]]], axis=1)
+                    # Impute missing values using IterativeImputer.
                     imputer = IterativeImputer(random_state=42)
-                    imputed = imputer.fit_transform(dummies)
-                    imputed_rounded = np.rint(imputed).astype(int)
-                    imputed_df = pd.DataFrame(
-                        imputed_rounded, columns=dummies.columns, index=df.index
-                    )
-                    # Convert back to a single categorical column by taking the column with the maximum value.
-                    predicted_category = imputed_df.idxmax(axis=1)
-                    df[col] = predicted_category.str.split(f"{col}_").str[-1]
+                    imputed_array = imputer.fit_transform(combined)
+                    imputed_df = pd.DataFrame(imputed_array, columns=combined.columns, index=df.index)
+
+                    # Extract the imputed encoded target column.
+                    imputed_encoded = imputed_df[f"{col}_encoded"]
+                    imputed_encoded = imputed_encoded.round().astype(int)
+                    min_code = 0
+                    max_code = len(le.classes_) - 1
+                    imputed_encoded = imputed_encoded.clip(lower=min_code, upper=max_code)
+                    # Decode back to the original categorical labels.
+                    imputed_categories = le.inverse_transform(imputed_encoded)
+                    df[col] = imputed_categories
                 elif mtype == "MNAR":
                     df[col].fillna("Missing", inplace=True)
 
@@ -252,7 +272,6 @@ class MissingDataHandler:
 
             # --- Datetime Data ---
             elif pd.api.types.is_datetime64_any_dtype(df[col]):
-                print("entering here")
                 numeric_series = df[col].apply(lambda x: x.timestamp() if pd.notnull(x) else np.nan)
                 if mtype == "MCAR":
                     imputer = SimpleImputer(strategy="median")

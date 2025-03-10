@@ -124,52 +124,46 @@ def ks_complement(real: pd.Series, synthetic: pd.Series) -> float:
     return 1 - ks_stat
 
 
-def tv_complement(real: pd.Series, synthetic: pd.Series, bins: int = 10) -> float:
+def tv_complement(real_series: pd.Series, synthetic_series: pd.Series) -> float:
     """
-    Compute the complement of the Total Variation (TV) distance between the histograms
-    of the real and synthetic data. A value of 1 indicates identical distributions.
+    Computes the TVComplement score between a real and a synthetic categorical column.
     
-    If the data is datetime or timedelta, convert it to numeric values (in seconds).
+    TVD is defined as:
+        TVD = 1/2 * sum(|R_ω - S_ω|) for all categories ω in the union of both series.
+        
+    The TVComplement score is:
+        score = 1 - TVD
+        
+    Parameters
+    ----------
+    real_series : pd.Series
+        Categorical data from the real dataset.
+    synthetic_series : pd.Series
+        Categorical data from the synthetic dataset.
     
-    Args:
-        real (pd.Series): Real numerical data.
-        synthetic (pd.Series): Synthetic numerical data.
-        bins (int, optional): Number of bins to use for the histograms. Defaults to 10.
-    
-    Returns:
-        float: 1 - TV distance, where TV is computed over the normalized histograms.
+    Returns
+    -------
+    float
+        The TVComplement score (between 0 and 1).
     """
-    real_clean = real.dropna()
-    synthetic_clean = synthetic.dropna()
+    # Compute normalized frequency distributions (probabilities)
+    real_freq = real_series.value_counts(normalize=True)
+    synthetic_freq = synthetic_series.value_counts(normalize=True)
     
-    if len(real_clean) == 0 or len(synthetic_clean) == 0:
-        return 0.0
-
-    # Convert datetime/timedelta to numeric values if necessary.
-    if np.issubdtype(real_clean.dtype, np.datetime64):
-        # Convert to seconds since epoch
-        real_clean = real_clean.astype('int64') / 1e9
-        synthetic_clean = synthetic_clean.astype('int64') / 1e9
-    elif np.issubdtype(real_clean.dtype, np.timedelta64):
-        # Convert to total seconds
-        if hasattr(real_clean, 'dt'):
-            real_clean = real_clean.dt.total_seconds()
-            synthetic_clean = synthetic_clean.dt.total_seconds()
-        else:
-            real_clean = real_clean.astype('int64') / 1e9
-            synthetic_clean = synthetic_clean.astype('int64') / 1e9
-
-    all_data = pd.concat([real_clean, synthetic_clean])
-    bin_edges = np.histogram_bin_edges(all_data, bins=bins)
-    real_hist, _ = np.histogram(real_clean, bins=bin_edges, density=True)
-    synth_hist, _ = np.histogram(synthetic_clean, bins=bin_edges, density=True)
+    # Get the union of categories present in both series
+    all_categories = real_freq.index.union(synthetic_freq.index)
     
-    # Normalize the histograms
-    real_hist = real_hist / np.sum(real_hist)
-    synth_hist = synth_hist / np.sum(synth_hist)
+    # Reindex to ensure both distributions have the same categories, fill missing with 0
+    real_freq = real_freq.reindex(all_categories, fill_value=0)
+    synthetic_freq = synthetic_freq.reindex(all_categories, fill_value=0)
     
-    tv_distance = 0.5 * np.sum(np.abs(real_hist - synth_hist))
-    return 1 - tv_distance
+    # Calculate Total Variation Distance (TVD)
+    tvd = 0.5 * np.abs(real_freq - synthetic_freq).sum()
+    
+    # Compute TVComplement: higher score means higher similarity
+    tv_complement_score = 1 - tvd
+    
+    return tv_complement_score
 
 
 # ------------------------------------------------------------------------------
