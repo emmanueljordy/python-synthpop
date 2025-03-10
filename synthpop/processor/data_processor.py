@@ -74,7 +74,7 @@ class DataProcessor:
             elif dtype == "timedelta": 
                 data[col] = pd.to_timedelta(data[col]).dt.total_seconds()
 
-        return data
+        return data[self.original_columns]
 
     def postprocess(self, synthetic_data: pd.DataFrame) -> pd.DataFrame:
         """Transform numerical synthetic data back to its original format."""

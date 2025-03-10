@@ -334,11 +334,12 @@ class GaussianCopulaMethod(BaseSingleTableSynthesizer):
             univariates.append(univariate)
         model_parameters["univariates"] = univariates
         model_parameters["columns"] = columns
-        correlation = model_parameters.get("correlation")
+        correlation = model_parameters.get('correlation')
         if correlation:
-            model_parameters["correlation"] = self._rebuild_correlation_matrix(correlation)
+            model_parameters['correlation'] = (
+                self._rebuild_correlation_matrix(correlation))
         else:
-            model_parameters["correlation"] = [[1.0]]
+            model_parameters['correlation'] = [[1.0]]
         return model_parameters
 
     @classmethod

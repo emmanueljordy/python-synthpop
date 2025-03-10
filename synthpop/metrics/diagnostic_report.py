@@ -85,7 +85,7 @@ class MetricsReport:
                 col_report["range_coverage"] = range_coverage(real, synthetic)
                 col_report["boundary_adherence"] = boundary_adherence(real, synthetic)
                 col_report["ks_complement"] = ks_complement(real, synthetic)
-                col_report["tv_complement"] = tv_complement(real, synthetic)
+                col_report["tv_complement"] = "N/A"
                 col_report["statistic_similarity"] = statistic_similarity(real, synthetic)
                 col_report["category_coverage"] = "N/A"
                 col_report["category_adherence"] = "N/A"
@@ -95,7 +95,7 @@ class MetricsReport:
                 col_report["range_coverage"] = "N/A"
                 col_report["boundary_adherence"] = "N/A"
                 col_report["ks_complement"] = "N/A"
-                col_report["tv_complement"] = "N/A"
+                col_report["tv_complement"] = tv_complement(real, synthetic)
                 col_report["statistic_similarity"] = "N/A"
                 col_report["category_coverage"] = category_coverage(real, synthetic)
                 col_report["category_adherence"] = category_adherence(real, synthetic)
