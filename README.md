@@ -2,9 +2,7 @@
 
 # python-synthpop
 
-Python implementation of the R package [synthpop](https://cran.r-project.org/web/packages/synthpop/index.html).
-
-```python-synthpop``` is an open-source library for synthetic data generation (SDG). The library includes robust implementations of Classification and Regression Trees (CART) and Gaussian Copula (GC) synthesizers, equipping users with an open-source python library to generate high-quality, privacy-preserving synthetic data.
+```python-synthpop``` is an open-source library for synthetic data generation (SDG). The library includes robust implementations of Classification and Regression Trees (CART) and Gaussian Copula (GC) synthesizers, equipping users with an open-source python library to generate high-quality, privacy-preserving synthetic data. This library is a Python implementation of the CART method used in R package [synthpop](https://cran.r-project.org/web/packages/synthpop/index.html).
 
 Synthetic data is generated in six steps:
 
@@ -56,23 +54,25 @@ Out[2]:
 
 ### python-synthpop
 
-Using default parameters the six steps are applied on the Social Diagnosis example tot generate synthetic data. See also [link](./example_notebooks/00_readme.ipynb).
+Using default parameters the six steps are applied on the Social Diagnosis example to generate synthetic data. See also [link](./example_notebooks/00_readme.ipynb).
 
 ```
 In [1]:     from synthpop import MissingDataHandler, DataProcessor, CARTMethod
 
 In [2]:     # 1. Initiate metadata
-            metadata = MissingDataHandler()
+            md_handler = MissingDataHandler()
 
-            # 1.1 Detect data types
-            column_dtypes = metadata.get_column_dtypes(df)
-            print("Column Data Types:", column_dtypes)
+            # 1.1 Get data types
+            metadata= md_handler.get_column_dtypes(df)
+            print("Column Data Types:", metadata)
 
             Column Data Types: {'sex': 'categorical', 'age': 'numerical', 'marital': 'categorical', 'income': 'numerical', 'ls': 'categorical', 'smoke': 'categorical'}
 
-In [3]:     # 2. Missing data
+In [3]:     # 2. Process missing data
+            print("Missing data:")
             print(df.isnull().sum())
 
+            Missing data:
             sex          0
             age          0
             marital      9
@@ -82,17 +82,19 @@ In [3]:     # 2. Missing data
             dtype: int64
 
 In [4]:     # 2.1 Detect type of missingness
-            missingness_dict = metadata.detect_missingness(df)
-            print("Detected missingness yype:", missingness_dict)
+            missingness_dict = md_handler.detect_missingness(df)
+            print("Detected missingness type:", missingness_dict)
 
             Detected missingness type: {'marital': 'MAR', 'income': 'MAR', 'ls': 'MAR', 'smoke': 'MAR'}
 
 
 In [5]:     # 2.2 Impute missing values
-            df_imputed = metadata.apply_imputation(df, missingness_dict)
+            real_df = md_handler.apply_imputation(df, missingness_dict)
 
-            print(df_imputed.isnull().sum())
+            print("Missing data:")
+            print(real_df.isnull().sum())
 
+            Missing data:
             sex        0
             age        0
             marital    0
@@ -102,25 +104,73 @@ In [5]:     # 2.2 Impute missing values
             dtype: int64
 
 
-In [6]:     # 3. Instantiate the DataProcessor with column types
-            processor = DataProcessor(column_dtypes)
+In [6]:     # 3. Preprocessing: Instantiate the DataProcessor with column_dtypes
+            processor = DataProcessor(metadata)
 
             # 3.1 Preprocess the data: transforms raw data into a numerical format
-            processed_data = processor.preprocess(df)
-            print("Processed Data:")
+            processed_data = processor.preprocess(real_df)
+            print("Processed data:")
             display(processed_data.head())
 
-            Processed Data:
+            Processed data:
             sex	age	marital	income	ls	smoke
-            0	0	0.503625	3	-0.480608	4	0
-            1	1	-1.495187	4	-0.834521	3	0
-            2	0	-1.603231	4	NaN	4	0
-            3	0	1.638086	5	-0.401961	1	0
-            4	0	0.341559	3	0.069923	3	1
+            0	0	0.503625	3	-0.517232	4	0
+            1	1	-1.495187	4	-0.898113	3	0
+            2	0	-1.603231	4	0.000000	4	0
+            3	0	1.638086	5	-0.432591	1	0
+            4	0	0.341559	3	0.075251	3	1
+
 
 In [7]:     # 4. Fit the CART method
             cart = CARTMethod(metadata, smoothing=True, proper=True, minibucket=5, random_state=42)
             cart.fit(processed_data)
 
+In [8]:     # 4.1 Preview generated synthetic data
+            synthetic_processed = cart.sample(100)
+            print("Synthetic processed data:")
+            display(synthetic_processed.head())
+
+            Synthetic processed data:
+            sex	age	marital	income	ls	smoke
+            0	1	-1.087360	3	-1.201126	4	0
+            1	1	-0.882289	3	1.182255	4	0
+            2	0	1.449201	5	-0.255936	2	0
+            3	0	0.890598	3	0.220739	4	1
+            4	0	0.313502	3	1.395039	4	0
+
+In [9]:     # 5. Postprocessing: back to the original format and preview of data
+            synthetic_df = processor.postprocess(synthetic_processed)
+            print("Synthetic data in original format:")
+            display(synthetic_df.head())
+
+            Synthetic data in original format:
+            sex	age	marital	income	ls	smoke
+            0	FEMALE	30.377064	SINGLE	-8.000000	MOSTLY DISSATISFIED	NO
+            1	MALE	54.823585	MARRIED	1861.809802	PLEASED	YES
+            2	FEMALE	78.641244	MARRIED	771.239134	MOSTLY DISSATISFIED	NO
+            3	MALE	53.458122	MARRIED	1758.942347	PLEASED	NO
+            4	FEMALE	60.354551	SINGLE	1024.351794	PLEASED	NO
+
+In [10]:    from synthpop.metrics import (
+                MetricsReport,
+                EfficacyMetrics,
+                DisclosureProtection
+            )
+
+In [11]:    # 6. Evaluate the synthetic data
+
+            # 6.1 Diagnostic report
+            report = MetricsReport(real_df, synthetic_df, metadata)
+            report_df = report.generate_report()
+            print("=== Diagnostic Report ===")
+            display(report_df)
+
+            	column	type	missing_value_similarity	range_coverage	boundary_adherence	ks_complement	tv_complement	statistic_similarity	category_coverage	category_adherence
+                0	sex	categorical	1.0	N/A	N/A	N/A	0.9764	N/A	1.0	1.0
+                1	age	numerical	1.0	0.94757	1.0	0.9142	N/A	0.962239	N/A	N/A
+                2	marital	categorical	1.0	N/A	N/A	N/A	0.967	N/A	0.666667	1.0
+                3	income	numerical	1.0	0.408926	1.0	0.9056	N/A	0.948719	N/A	N/A
+                4	ls	categorical	1.0	N/A	N/A	N/A	0.9224	N/A	0.857143	1.0
+                5	smoke	categorical	1.0	N/A	N/A	N/A	0.9754	N/A	1.0	1.0
 
 ```
