@@ -76,15 +76,15 @@ class EfficacyMetrics:
         y_real = real_df[self.target_column]
 
         # Handle categorical encoding only if it's a classification task
-        if self.task == 'classification':
-            categorical_cols = X_syn.select_dtypes(include=['object', 'category']).columns.tolist()
+        
+        categorical_cols = X_syn.select_dtypes(include=['object', 'category']).columns.tolist()
 
-            if categorical_cols:
-                X_syn = pd.get_dummies(X_syn, columns=categorical_cols, drop_first=True)
-                X_real = pd.get_dummies(X_real, columns=categorical_cols, drop_first=True)
+        if categorical_cols:
+            X_syn = pd.get_dummies(X_syn, columns=categorical_cols, drop_first=True)
+            X_real = pd.get_dummies(X_real, columns=categorical_cols, drop_first=True)
 
-                # Align columns in case of different categorical levels between real and synthetic data
-                X_syn, X_real = X_syn.align(X_real, join='left', axis=1, fill_value=0)
+            # Align columns in case of different categorical levels between real and synthetic data
+            X_syn, X_real = X_syn.align(X_real, join='left', axis=1, fill_value=0)
 
         # Model Training and Evaluation
         if self.task == 'regression':

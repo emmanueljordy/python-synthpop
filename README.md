@@ -35,7 +35,7 @@ python setup.py install
 # Examples
 
 #### Social Diagnosis 2011 dataset
-We will use the Social Diagnosis 2011 dataset as an example, which is a comprehensive survey conducted in Poland. This dataset includes a wide range of variables related to the social and economic conditions of Polish households and individuals. It covers aspects such as income, employment, education, health, and overall quality of life. 
+We will use the [Social Diagnosis 2011](https://search.r-project.org/CRAN/refmans/synthpop/html/SD2011.html) dataset as an example, which is a comprehensive survey conducted in Poland. This dataset includes a wide range of variables related to the social and economic conditions of Polish households and individuals. It covers aspects such as income, employment, education, health, and overall quality of life. 
 
 ```
 In [1]:  import pandas as pd
@@ -54,7 +54,7 @@ Out[2]:
 
 ### python-synthpop
 
-Using default parameters the six steps are applied on the Social Diagnosis example to generate synthetic data. See also [link](./example_notebooks/00_readme.ipynb).
+Using default parameters the six steps are applied on the Social Diagnosis example to generate synthetic data. See also the corresponding [notebook](./example_notebooks/00_readme.ipynb).
 
 ```
 In [1]:     from synthpop import MissingDataHandler, DataProcessor, CARTMethod
@@ -173,4 +173,36 @@ In [11]:    # 6. Evaluate the synthetic data
                 4	ls	categorical	1.0	N/A	N/A	N/A	0.9224	N/A	0.857143	1.0
                 5	smoke	categorical	1.0	N/A	N/A	N/A	0.9754	N/A	1.0	1.0
 
+In [12]:    # 6.2 Efficacy metrics
+
+            # 6.2.1 Regression
+            reg_efficacy = EfficacyMetrics(task='regression', target_column="income")
+            reg_metrics = reg_efficacy.evaluate(real_df, synthetic_df)
+            print("=== Regression Efficacy Metrics ===")
+            print(reg_metrics)
+
+            === Regression Efficacy Metrics ===
+            {'mse': 1669726.6979087007, 'mae': 904.2202005090558, 'r2': -0.19619130295207743}
+
+In [13]:    # 6.2.2 Classification
+            clf_efficacy = EfficacyMetrics(task='classification', target_column="smoke")
+            clf_metrics = clf_efficacy.evaluate(real_df, synthetic_df)
+            print("\n=== Classification Efficacy Metrics ===")
+            print(clf_metrics)
+
+            === Classification Efficacy Metrics ===
+            {'accuracy': 0.6058, 'f1_score': 0.6184739077074358}
+
+In [14]:    # 6.3 Privacy
+            dp = DisclosureProtection(real_df, synthetic_df)
+            dp_score = dp.score()
+            dp_report = dp.report()
+
+            print("\n=== Disclosure Protection ===")
+            print(f"Score: {dp_score:.3f}")
+            print("Detailed Report:", dp_report)
+
+            === Disclosure Protection ===
+            Score: 1.000
+            Detailed Report: {'threshold': 0.0, 'risk_rate': 0.0, 'disclosure_protection_score': 1.0}
 ```

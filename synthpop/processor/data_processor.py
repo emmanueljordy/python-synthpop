@@ -61,7 +61,7 @@ class DataProcessor:
                 data = pd.concat([data, transformed_data], axis=1)
 
             elif dtype == "numerical":
-                scaler = StandardScaler()
+                scaler = StandardScaler(with_mean= False, with_std= False)
                 data[col] = scaler.fit_transform(data[[col]])
                 self.scalers[col] = scaler
 
